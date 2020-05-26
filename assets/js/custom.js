@@ -1,7 +1,7 @@
 let btnAddTahunAjaran = document.getElementById('btnAddTahunAjaran');
 let btnAddTahunAjaranYN = true;
 
-btnAddTahunAjaran.addEventListener('click',function() {
+btnAddTahunAjaran.addEventListener('click', function () {
 	let txtTahunAjaran = document.getElementById('txtTahunAjaran');
 	let btnSaveTahunAjaran = document.getElementById('btnSaveTahunAjaran');
 
@@ -10,7 +10,7 @@ btnAddTahunAjaran.addEventListener('click',function() {
 		txtTahunAjaran.innerHTML = "<input type='text' class='form-control' placeholder='Tahun Ajaran'>";
 		btnSaveTahunAjaran.innerHTML = "<input type='submit' class='form-control' >";
 		btnAddTahunAjaranYN = false;
-	}else{
+	} else {
 		btnAddTahunAjaran.innerHTML = "<i class='fa fa-plus' aria-hidden='true'></i> Tahun Ajaran";
 		txtTahunAjaran.innerHTML = "";
 		btnSaveTahunAjaran.innerHTML = "";
