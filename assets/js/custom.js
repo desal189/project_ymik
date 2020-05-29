@@ -53,10 +53,33 @@ $(function () {
 			dataType: 'json',
 			success: function (data) {
 				$('#id_tahun_ajaran').val(data.id_tahun_ajaran);
-				$('#tingkatan').val(data.tingkat);
+				$('#tingkatan').val(data.tingkat_kelas);
 				$('#nama_kelas').val(data.nama_kelas);
-				$('#kelas_id').val(data.id);
+				$('#kelas_id').val(data.id_kelas);
 			}
 		});
 	});
 });
+
+// Proses Import data Siswa
+function uploadFile() {
+	var file = document.getElementById("fileku").files[0];
+	var formdata = new FormData();
+
+	formdata.append("file_nya", file);
+	var ajax = new XMLHttpRequest();
+	ajax.upload.addEventListener("progress", progressUpload, false);
+	ajax.open("POST", base_url + "master/importSiswa", true);
+	ajax.send(formdata);
+}
+
+// Progress Bar
+function progressUpload(event) {
+	var percent = (event.loaded / event.total) * 100;
+	document.getElementById("progress-bar").style.width = Math.round(percent) + '%';
+	document.getElementById("status").innerHTML = Math.round(percent) + "%";
+	if (event.loaded == event.total) {
+		window.location.href = base_url + "master/siswa";
+	}
+}
+

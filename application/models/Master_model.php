@@ -13,7 +13,7 @@ class Master_model extends CI_Model
         ];
 
         // insert data
-        $this->db->insert('tahun_ajaran', $data);
+        $this->db->insert('tb_tahun_ajaran', $data);
         // tampilkan pesan berhasil
         $this->session->set_flashdata(
             'pesan',
@@ -33,9 +33,9 @@ class Master_model extends CI_Model
         $thnAjar = htmlspecialchars(filter_var($thnAjar));
         $id = htmlspecialchars(filter_var($id));
         // Update data
-        $this->db->query("UPDATE tahun_ajaran
+        $this->db->query("UPDATE tb_tahun_ajaran
 				        SET tahun_ajaran = '$thnAjar'
-                        WHERE id = $id");
+                        WHERE id_tahun = $id");
 
         // tampilkan pesan berhasil
         $this->session->set_flashdata(
@@ -56,7 +56,7 @@ class Master_model extends CI_Model
     {
         $id = htmlspecialchars(filter_var($id));
         // Update data
-        $this->db->query("DELETE FROM tahun_ajaran WHERE id = $id");
+        $this->db->query("DELETE FROM tb_tahun_ajaran WHERE id_tahun = $id");
 
         // tampilkan pesan berhasil
         $this->session->set_flashdata(
@@ -74,16 +74,16 @@ class Master_model extends CI_Model
 
     public function getKelas()
     {
-        $query = "SELECT `kelas`.*, `tahun_ajaran`.`tahun_ajaran`
-                  FROM  `kelas` JOIN `tahun_ajaran`
-                  ON `kelas`.`id_tahun_ajaran` = `tahun_ajaran`.`id`
-            ";
+        $query = "SELECT A.*, B.tahun_ajaran
+                  FROM  tb_kelas A
+                  JOIN tb_tahun_ajaran B
+                  ON A.id_tahun_ajaran = B.id_tahun";
         return $this->db->query($query)->result_array();
     }
 
     public function getKelasId($id)
     {
-        return $this->db->query("SELECT * FROM kelas WHERE id = $id")->row_array();
+        return $this->db->query("SELECT * FROM tb_kelas WHERE id_kelas = $id")->row_array();
     }
 
     public function insertKelas($idTahunAjaran, $tingkat, $nama_kelas)
@@ -91,10 +91,10 @@ class Master_model extends CI_Model
         $data = [
             'id_tahun_ajaran' => htmlspecialchars(filter_var($idTahunAjaran, FILTER_SANITIZE_STRING)),
             'nama_kelas' => strtoupper(htmlspecialchars(filter_var($nama_kelas, FILTER_SANITIZE_STRING))),
-            'tingkat' => htmlspecialchars(filter_var($tingkat, FILTER_SANITIZE_STRING)),
+            'tingkat_kelas' => htmlspecialchars(filter_var($tingkat, FILTER_SANITIZE_STRING)),
         ];
 
-        $this->db->insert('kelas', $data);
+        $this->db->insert('tb_kelas', $data);
 
         $this->session->set_flashdata(
             'pesan',
@@ -116,11 +116,11 @@ class Master_model extends CI_Model
         $nama_kelas = htmlspecialchars(filter_var($nama_kelas, FILTER_SANITIZE_STRING));
         $tingkat = htmlspecialchars(filter_var($tingkat, FILTER_SANITIZE_STRING));
 
-        $this->db->query("UPDATE kelas
+        $this->db->query("UPDATE tb_kelas
 				        SET id_tahun_ajaran = $idTahunAjaran, 
                             nama_kelas = '$nama_kelas',
-                            tingkat = $tingkat
-                        WHERE id = $id");
+                            tingkat_kelas = $tingkat
+                        WHERE id_kelas = $id");
 
         // tampilkan pesan berhasil
         $this->session->set_flashdata(
@@ -140,7 +140,7 @@ class Master_model extends CI_Model
     {
         $id = htmlspecialchars(filter_var($id));
         // Update data
-        $this->db->delete('kelas', ['id' => $id]);
+        $this->db->delete('tb_kelas', ['id_kelas' => $id]);
 
         // tampilkan pesan berhasil
         $this->session->set_flashdata(
@@ -154,5 +154,13 @@ class Master_model extends CI_Model
         );
         // alihkan kembali ke halaman master/data tahunan
         redirect('master/dataTahunan');
+    }
+
+
+    public function insertSiswa($nis, $nama, $kelas, $wali, $alamat)
+    {
+        $query = "INSERT INTO tb_siswa (NIS,NamaSiswa,KelasId,WaliSiswa,AlamatSiswa) 
+                VALUES ('$nis','$nama','$kelas','$wali','$alamat')";
+        $this->db->query($query);
     }
 }

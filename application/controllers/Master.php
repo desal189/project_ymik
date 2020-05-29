@@ -6,10 +6,8 @@ class Master extends CI_Controller
 	public function __construct()
 	{
 		parent::__construct();
-    
-		$this->load->model('Master_model', 'master');
-		$this->load->model('master/Master_model');
 
+		$this->load->model('Master_model', 'master');
 	}
 
 	public function index()
@@ -24,16 +22,15 @@ class Master extends CI_Controller
 	// Data Tahunan
 	public function dataTahunan()
 	{
-
-		$data['tahun_ajar'] = $this->db->get('tahun_ajaran')->result_array();
+		$data['tahun_ajar'] = $this->db->get('tb_tahun_ajaran')->result_array();
 		$data['kelas'] = $this->master->getKelas();
 		$this->load->view('templates/header');
 		$this->load->view('templates/menu');
 		$this->load->view('master/dataTahunan_view', $data);
 		$this->load->view('templates/footer');
 	}
-  
-  public function editTahunAjar()
+
+	public function editTahunAjar()
 	{
 		if (empty($_POST)) {
 			redirect('master');
@@ -82,7 +79,7 @@ class Master extends CI_Controller
 	public function hapusKelas($id)
 	{
 		$this->master->deleteKelas($id);
-  }
+	}
 
 	// Siswa
 	public function siswa()
@@ -99,44 +96,63 @@ class Master extends CI_Controller
 	}
 
 
-	
-  
+
+
 	public function importSiswa()
 	{
-		// Import Library
-		include APPPATH . 'third_party/excel_reader2/excel_reader2.php';
+		// Load plugin PHPExcel nya
+		include APPPATH . 'third_party/PHPExcel/PHPExcel.php';
 
-		// upload file xls
-		$target = basename($_FILES['fileSiswa']['name']);
-		move_uploaded_file($_FILES['fileSiswa']['tmp_name'], $target);
+		$config['upload_path'] = realpath('excel');
+		$config['allowed_types'] = 'xlsx|xls|csv';
+		$config['max_size'] = '10000';
+		$config['encrypt_name'] = true;
 
-		// beri permision  agar file xls dapat di baca
-		chmod($_FILES['fileSiswa']['name'], 0777);
+		$this->load->library('upload', $config);
 
-		// mengambil isi file xls
-		$data = new Spreadsheet_Excel_Reader($_FILES['fileSiswa']['name'], false);
-		// menghitung jumlah baris data yang ada
-		$jumlah_baris = $data->rowcount($sheet_index = 0);
+		if (!$this->upload->do_upload('file_nya')) {
+			//upload gagal
+			$this->session->set_flashdata('notif', '<div class="alert alert-danger alert-dismissible fade show" role="alert"><strong>PROSES IMPORT GAGAL!</strong> ' . $this->upload->display_errors() . '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+			//redirect halaman
+			redirect('master/siswa');
+		} else {
+			$data_upload = $this->upload->data();
 
-		// jumlah default data yang berhasil di import
-		$berhasil = 0;
-		for ($i = 2; $i <= $jumlah_baris; $i++) {
+			$excelreader = new PHPExcel_Reader_Excel2007();
+			$loadexcel = $excelreader->load('excel/' . $data_upload['file_name']); // Load file yang telah diupload ke folder excel
+			$sheet = $loadexcel->getActiveSheet()->toArray(null, true, true, true);
 
-			// menangkap data dan memasukkan ke variabel sesuai dengan kolumnya masing-masing
-			$nis     = $data->val($i, 1);
-			$nama     = $data->val($i, 2);
-			$kelas   = $data->val($i, 3);
-			$wali  = $data->val($i, 4);
-			$alamat  = $data->val($i, 4);
+			$data = array();
 
-			if ($nis != "" && $nama != "" && $kelas != "" && $wali != "" && $alamat != "") {
-				// input data ke database (table data_pegawai)
-				$this->Mpesan_model->getData($nis, $nama, $kelas, $wali, $alamat);
-				$berhasil++;
+			$numrow = 1;
+			foreach ($sheet as $row) {
+				if ($numrow > 1) {
+					array_push($data, array(
+						'nis' => $row['A'],
+						'nama' => $row['B'],
+						'kelas' => $row['C'],
+						'wali' => $row['D'],
+						'alamat' => $row['E'],
+					));
+				}
+				$numrow++;
 			}
-		}
 
-		// hapus kembali file .xls yang di upload tadi
-		unlink($_FILES['filepegawai']['name']);
+			$nrow = 0;
+			foreach ($data as $col) {
+				//Insert Data ke Database
+				$this->master->insertSiswa($data[$nrow]['nis'], $data[$nrow]['nama'], $data[$nrow]['kelas'], $data[$nrow]['wali'], $data[$nrow]['alamat']);
+
+				$nrow++;
+			}
+
+			//delete file from server
+			unlink(realpath('excel/' . $data_upload['file_name']));
+
+			//upload success
+			$this->session->set_flashdata('notif', '<div class="alert  alert-success alert-dismissible fade show" role="alert"><strong>PROSES IMPORT BERHASIL!</strong>  Data berhasil diimport! <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+			//redirect halaman
+			// redirect('master/siswa');
+		}
 	}
 }

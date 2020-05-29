@@ -64,8 +64,8 @@
                                                     <td><?= $i ?></td>
                                                     <td><?= $ta['tahun_ajaran'] ?></td>
                                                     <td id="tahunAjaranAction" class="text-center ">
-                                                        <button type="button" class="btn btn-warning btn-sm   edit-tahunAjaran" style="color:#fff" data-toggle="modal" data-target="#editTaModal" data-idtahunajaran="<?= $ta['id'] ?>" data-tahunajaran="<?= $ta['tahun_ajaran'] ?>">Edit</button>
-                                                        <a href="<?= base_url('master/hapusTahunAjar/') . $ta['id'] ?>"> <button type="button" class="btn btn-danger btn-sm" style="color:#fff" onclick="return confirm('Apakah Anda Yakin Ingin  menghapus data ini ?')">Hapus</button></a>
+                                                        <button type="button" class="btn btn-warning btn-sm   edit-tahunAjaran" style="color:#fff" data-toggle="modal" data-target="#editTaModal" data-idtahunajaran="<?= $ta['id_tahun'] ?>" data-tahunajaran="<?= $ta['tahun_ajaran'] ?>">Edit</button>
+                                                        <a href="<?= base_url('master/hapusTahunAjar/') . $ta['id_tahun'] ?>"> <button type="button" class="btn btn-danger btn-sm" style="color:#fff" onclick="return confirm('Apakah Anda Yakin Ingin  menghapus data ini ?')">Hapus</button></a>
                                                     </td>
                                                 </tr>
                                                 <?php $i++ ?>
@@ -94,11 +94,11 @@
                                                     <tr>
                                                         <td><?= $i ?></td>
                                                         <td><?= $k['tahun_ajaran'] ?></td>
-                                                        <td><?= $k['tingkat'] ?></td>
+                                                        <td><?= $k['tingkat_kelas'] ?></td>
                                                         <td><?= $k['nama_kelas'] ?></td>
                                                         <td class="text-center">
-                                                            <button type="button" class="btn btn-warning btn-sm edit-kelas" style="color:#fff" data-toggle="modal" data-target="#kelasModal" data-kelasId="<?= $k['id'] ?>">Edit</button>
-                                                            <a href="<?= base_url('master/hapusKelas/') . $k['id'] ?>"> <button type="button" class="btn btn-danger btn-sm" style="color:#fff" onclick="return confirm('Apakah Anda Yakin Ingin  menghapus data ini ?')">Hapus</button></a>
+                                                            <button type="button" class="btn btn-warning btn-sm edit-kelas" style="color:#fff" data-toggle="modal" data-target="#kelasModal" data-kelasId="<?= $k['id_kelas'] ?>">Edit</button>
+                                                            <a href="<?= base_url('master/hapusKelas/') . $k['id_kelas'] ?>"> <button type="button" class="btn btn-danger btn-sm" style="color:#fff" onclick="return confirm('Apakah Anda Yakin Ingin  menghapus data ini ?')">Hapus</button></a>
                                                         </td>
                                                         </td>
                                                     </tr>
@@ -176,7 +176,7 @@
                             <select id="id_tahun_ajaran" name="id_tahun_ajaran" class="custom-select">
                                 <option value="default" selected>Pilih Tahun Ajaran</option>
                                 <?php foreach ($tahun_ajar as $ta) : ?>
-                                    <option value="<?= $ta['id'] ?>"><?= $ta['tahun_ajaran'] ?></option>
+                                    <option value="<?= $ta['id_tahun'] ?>"><?= $ta['tahun_ajaran'] ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
